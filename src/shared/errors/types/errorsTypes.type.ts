@@ -1,5 +1,9 @@
 export enum EErrorsTypes {
-  SERVICE_UNAVAILABLE = "Service is not available",
-  BAD_REQUEST = "Bad request",
-  UNKONWN = "Unknown error",
+  Network = "Network Error",
+  Auth = "Auth Error",
+  Unexpected = "Unexpected Error",
+  Uknown = "Uknown Error",
+  InternalServer = "Internal Server Error",
+  Validation = "Validation Error",
+  BadRequest = "Bad Request Error",
 }

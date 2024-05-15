@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { CreateUserBadRequest } from "./errors/CreateUserBadRequest.error";
 import { ExempleService } from "./exemple.service";
 import { GenericError } from "../shared/errors/GenericError.error";
+import { InternalServerError } from "../shared/errors/InternalServerError";
+import { CreateUserValidationError } from "./errors/CreateUserValidationError";
+import { BadRequestError } from "../shared/errors/BadRequestError";
+import { User } from "./entities/user.entity";
+import { UserNotFoundError } from "./errors/UserNotFoundError";
 
 const exempleService = new ExempleService();
 export class ExempleController {
@@ -12,7 +16,9 @@ export class ExempleController {
     if (!id) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send(new GenericError(400, "Id is required", "IdIsRequired"));
+        .send(
+          new BadRequestError("Id is required", ["Id is required"]).toJSON()
+        );
     } else {
       return exempleService
         .findOne(id)
@@ -22,7 +28,7 @@ export class ExempleController {
         .catch((error) => {
           res
             .status(StatusCodes.NOT_FOUND)
-            .send(new GenericError(404, error, "UserNotFound"));
+            .send(new UserNotFoundError().toJSON());
         });
     }
   }
@@ -42,7 +48,7 @@ export class ExempleController {
     if (errors.length > 0) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send(new CreateUserBadRequest("Fail on create user", errors));
+        .send(new CreateUserValidationError(errors));
     }
 
     return exempleService
@@ -53,7 +59,7 @@ export class ExempleController {
       .catch((error) => {
         res
           .status(StatusCodes.BAD_GATEWAY)
-          .send(new GenericError(500, error, "CreateUserError"));
+          .send(new InternalServerError(error.message));
       });
   }
 
@@ -66,7 +72,7 @@ export class ExempleController {
       .catch((error) => {
         res
           .status(StatusCodes.BAD_GATEWAY)
-          .send(new GenericError(500, error, "FindManyError"));
+          .send(new InternalServerError(error.message));
       });
   }
 }
